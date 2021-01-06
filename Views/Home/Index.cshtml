@@ -1,0 +1,169 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome... RSO seminarska 2021</h1>
+    <form action="watchprice/api/v1/pricealart" method="post" enctype="multipart/form-data">
+        <label for="trading_pair">*Choose trading pair:</label>
+        <select name="trading_pairs" id="trading_pair">
+            <option value="ethusdt">ETHUSDT</option>
+            <option value="btcusdt">BTCUSDT</option>
+            <option value="ltcbtc">LTCBTC</option>
+            <option value="xrpbtc">XRPBTC</option>
+            <option value="neobtc">NEOBTC</option>
+            <option value="neousdt">NEOUSDT</option>
+            <option value="ltcusdt">LTCUSDT</option>
+            <option value="ltceth">LTCETH</option>
+            <option value="xrpusdt">XRPUSDT</option>
+            <option value="adausdt">ADAUSDT</option>
+            <option value="uniusdt">UNIUSDT</option>
+        </select>
+
+        <label for="price">*Alart when crossing price:</label>
+        <input type="number" id="price" min="0" name="price" step=".00000001" value=""><br>
+
+        <input type="radio" id="onetime" name="times" value="onetime" checked>
+        <label for="onetime">One time</label>
+        <input type="radio" id="persistent" name="times" value="persistent">
+        <label for="persistent">Persistent</label><br>
+
+        <label for="sms">Send SMS to:</label>
+        <input type="text" id="sms" name="sms" value=""><br>
+
+        <label for="mail">E-mail:</label>
+        <input type="text" id="mail" name="mail" value=""><br>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <table id="dbPrice">
+        <tr>
+            <th>id</th>
+            <th>trading_pair</th>
+            <th>price</th>
+            <th>one_time</th>
+            <th>mobi</th>
+            <th>email</th>
+            <th>pod_name</th>
+            <th>last_price</th>
+            <th>last_update</th>
+            <th> </th>
+        </tr>
+    </table>
+    <br>
+    <br>
+    <br>
+    <form action="report/api/v1/report" method="post" enctype="multipart/form-data">
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" rows="3" cols="50">TEST</textarea>
+        <br>
+        <p>at least one field must be filled</p><br>
+        <label for="sms">Send SMS to:</label>
+        <input type="text" id="sms" name="sms" value=""><br>
+        <label for="mail">E-mail:</label>
+        <input type="text" id="mail" name="mail" value=""><br>
+        <br>
+        <input type="submit" value="Submit">
+
+    </form>
+    <p>report history</p>
+    <table id="reportHistory">
+        <tr>
+            <th>id</th>
+            <th>content</th>
+            <th>is_test</th>
+            <th>mobi</th>
+            <th>email</th>
+            <th>info</th>
+            <th>last_update</th>
+        </tr>
+    </table>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", get_json_data_price, false);
+    document.addEventListener("DOMContentLoaded", get_json_data_report, false);
+
+    function get_json_data_report() {
+        // Relative URL of external json file
+        //var json_url = 'http://localhost:32772/api/v1/report';
+        var json_url = 'report/api/v1/report';
+
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                var data = JSON.parse(this.responseText);
+                append_json_report(data);
+            }
+        }
+        xmlhttp.open("GET", json_url, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send();
+    }
+
+    function append_json_report(data) {
+        var table = document.getElementById('reportHistory');
+        data.forEach(function (object) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + object.id + '</td>' +
+                '<td>' + object.content + '</td>' +
+                '<td>' + object.is_test + '</td>' +
+                '<td>' + object.mobi + '</td>' +
+                '<td>' + object.email + '</td>' +
+                '<td>' + object.info + '</td>' +
+                '<td>' + object.last_update.toString() + '</td>';
+            table.appendChild(tr);
+        });
+    }
+
+    function get_json_data_price() {
+        // Relative URL of external json file
+        //var json_url = 'http://localhost:32769/api/v1/pricealart';
+        var json_url = 'watchprice/api/v1/pricealart';
+
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                var data = JSON.parse(this.responseText);
+                append_json_price(data);
+            }
+        }
+        xmlhttp.open("GET", json_url, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send();
+    }
+
+    function append_json_price(data) {
+        var table = document.getElementById('dbPrice');
+        data.forEach(function (object) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + object.id + '</td>' +
+                '<td>' + object.trading_pair + '</td>' +
+                '<td>' + object.price.toString() + '</td>' +
+                '<td>' + object.one_time + '</td>' +
+                '<td>' + object.mobi + '</td>' +
+                '<td>' + object.email + '</td>' +
+                '<td>' + object.pod_name + '</td>' +
+                '<td>' + object.last_price.toString() + '</td>' +
+                '<td>' + object.last_update.toString() + '</td>' +
+                '<td><button onclick="SubForm('+ object.id + ')">Delete</button></td>';
+
+            table.appendChild(tr);
+        });
+    }
+    const url1 = 'watchprice/api/v1/pricealart/';
+    //const url1 = 'http://localhost:32769/api/v1/pricealart/'
+    function SubForm(id){
+        $.ajax({
+            url: url1 + id.toString(),
+            type: 'DELETE',
+            data: '',
+            success: function(){
+                console.log("OK");
+            }
+        });
+    }
+</script>
