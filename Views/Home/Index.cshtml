@@ -4,9 +4,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome... RSO seminarska 2021</h1>
+    <h3 id="priceNow">0</h3>
     <form action="watchprice/api/v1/pricealart" method="post" enctype="multipart/form-data">
         <label for="trading_pair">*Choose trading pair:</label>
-        <select name="trading_pairs" id="trading_pair">
+        <select name="trading_pair" id="trading_pair">
             <option value="ethusdt">ETHUSDT</option>
             <option value="btcusdt">BTCUSDT</option>
             <option value="ltcbtc">LTCBTC</option>
@@ -85,6 +86,34 @@
     document.addEventListener("DOMContentLoaded", get_json_data_price, false);
     document.addEventListener("DOMContentLoaded", get_json_data_report, false);
 
+    var innerHtmlChoosenOne = "";
+    tid = setInterval(function () { innerHtmlChoosenOne = InfLoop(innerHtmlChoosenOne); }, 5000);
+    
+    function InfLoop(innerHtmlChoosenOne) {
+        get_json_data_pricemonitor();
+    }
+
+    function get_json_data_pricemonitor() {
+        var json_url = 'http://localhost:32770/api/v1/pricemonitor';
+        //var json_url = 'watchprice/api/v1/pricemonitor';
+
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                var data = JSON.parse(this.responseText);
+                var tmp = "";
+                data.forEach(function (object) {
+                    tmp = tmp + object.tradingPair.toString() + ":" + object.lastPrice.toString() + "   ";
+                });
+
+                document.getElementById("priceNow").innerHTML = tmp;
+            }
+        }
+        xmlhttp.open("GET", json_url, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send();
+    }
     function get_json_data_report() {
         // Relative URL of external json file
         //var json_url = 'http://localhost:32772/api/v1/report';
