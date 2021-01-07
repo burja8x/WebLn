@@ -94,8 +94,8 @@
     }
 
     function get_json_data_pricemonitor() {
-        var json_url = 'http://localhost:32770/api/v1/pricemonitor';
-        //var json_url = 'watchprice/api/v1/pricemonitor';
+        //var json_url = 'http://localhost:32770/api/v1/pricemonitor';
+        var json_url = 'watchprice/api/v1/pricemonitor';
 
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
@@ -192,6 +192,7 @@
             data: '',
             success: function(){
                 console.log("OK");
+                location.reload();
             }
         });
     }

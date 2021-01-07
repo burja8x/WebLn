@@ -13,7 +13,7 @@ spec:
         app: webln-v1
     spec:
       containers:
-        - image: burja8x/webln:latest
+        - image: burja8x/webln:2.1
           name: webln-v1
           env:
             - name: APP_CONFIG_CONN_STRING
