@@ -22,8 +22,8 @@ namespace WebLn
                 {
                     webBuilder.ConfigureAppConfiguration((hostingContext, config) =>
                     {
-                        var connection = config.Build().GetConnectionString("AppConfig");
-                        //var connection = Environment.GetEnvironmentVariable("APP_CONFIG_CONN_STRING");
+                        //var connection = config.Build().GetConnectionString("AppConfig");
+                        var connection = Environment.GetEnvironmentVariable("APP_CONFIG_CONN_STRING");
                         config.AddAzureAppConfiguration(options =>
                         {
                             options.Connect(connection)
